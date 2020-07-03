@@ -2,9 +2,11 @@
 namespace frontend\controllers;
 
 use frontend\models\ResendVerificationEmailForm;
+use frontend\models\UpdateProfileForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
 use yii\base\InvalidArgumentException;
+use yii\helpers\Json;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -28,10 +30,10 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup', 'say'],
+                'only' => ['logout', 'signup', 'say', 'update-user-profile'],
                 'rules' => [
                     [
-                        'actions' => ['signup', 'say'],
+                        'actions' => ['signup', 'say', 'update-user-profile'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
@@ -167,6 +169,7 @@ class SiteController extends Controller
     {
         $model = new SignupForm();
         if ($model->load(Yii::$app->request->post()) && $model->signup()) {
+            return ['success' => true, 'statusCode' => 200, 'message' => 'Thanh cong'];
             Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
             return $this->goHome();
         }
@@ -174,6 +177,17 @@ class SiteController extends Controller
         return $this->render('signup', [
             'model' => $model,
         ]);
+    }
+
+    public function actionUpdateUserProfile()
+    {
+        $model = new UpdateProfileForm();
+        $model->load(Yii::$app->request->post(), '');
+        Yii::info($model->attributes);
+        $result = $model->saveData();
+
+        return Json::encode(['success' => $result]);
+
     }
 
     /**

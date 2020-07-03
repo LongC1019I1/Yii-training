@@ -23,6 +23,9 @@ class User extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+
+
+
     public static function tableName()
     {
         return 'user';
@@ -74,5 +77,34 @@ class User extends \yii\db\ActiveRecord
 
     public function setName( $username){
         $this->username = $username;
+    }
+
+    public function setPassword($password){
+       $this->password_hash = $password;
+}
+
+    public function getName( $username){
+        return $this->username;
+    }
+
+    public function validatePassword($password)
+    {
+        if (!$password) {
+            Yii::error('required');
+            return false;
+        }
+
+        if (!is_string($password)) {
+            Yii::error('not string');
+            return false;
+        }
+
+        if (strlen($password) < 8) {
+            return false;
+        }
+
+        // continue next caseattributes
+
+        return true;
     }
 }
